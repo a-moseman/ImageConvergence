@@ -8,6 +8,7 @@ import java.io.File;
 
 public class Main {
     public static void main(String[] args) throws Exception {
+        // TODO: include image in project
         String path = "C:\\Users\\drewm\\OneDrive\\Desktop\\Pictures\\diceSmall.png";
         File file = new File(path);
         BufferedImage inputImage;

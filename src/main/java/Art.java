@@ -15,6 +15,7 @@ public class Art {
     }
 
     private Color randomColor() {
+        // TODO: faster implementation?
         return new Color(RANDOM.nextInt(256), RANDOM.nextInt(256), RANDOM.nextInt(256), 255);
     }
 
@@ -55,6 +56,7 @@ public class Art {
             }
         }
 
+        // TODO: this condition allows for mutations that don't cause change, should this be the case?
         if (distances[best] > imageDistance(image)) { // if best if worst than current, redo
             return update(tests, mutationAmount, maxMutationSize);
         }
@@ -67,8 +69,14 @@ public class Art {
     private double imageDistance(BufferedImage image) {
         double d = 0;
         int x, y;
+        // TODO: potential to get distance without looping through pixels?
+        // idea 1: generate value when generating image, value used for distance calculation
+        // idea 2: calculate distance when mutating based on mutation
+        // idea 3: multithreading
+        // idea 4; GPU programming, i.e. shaders (OpenCL, etc.)
         for (x = 0; x < original.getWidth(); x++) {
             for (y = 0; y < original.getHeight(); y++) {
+                // TODO: optimize math for color distance
                 Color a = new Color(original.getRGB(x, y));
                 Color b = new Color(image.getRGB(x, y));
                 d += colorDistance(a, b);
