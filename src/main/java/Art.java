@@ -14,37 +14,9 @@ public class Art {
         this.image = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_INT_RGB);
     }
 
-    private Color randomColor() {
-        // TODO: faster implementation?
-        return new Color(RANDOM.nextInt(256), RANDOM.nextInt(256), RANDOM.nextInt(256), 255);
-    }
-
-    private BufferedImage[] randomImages(int mutationAmount, int tests, int maxMutationSize) {
-        BufferedImage[] images = new BufferedImage[tests];
-        int i, m, x, y, size;
-
-        ColorModel cm = image.getColorModel();
-        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-        WritableRaster raster = image.copyData(null);
-
-        for (i = 0; i < tests; i++) {
-            images[i] = new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-            Graphics g = images[i].getGraphics();
-            for (m = 0; m < mutationAmount; m++) {
-                size = RANDOM.nextInt(maxMutationSize) + 1;
-                x = RANDOM.nextInt(original.getWidth()) - size / 2;
-                y = RANDOM.nextInt(original.getHeight()) - size / 2;
-                g.setColor(randomColor());
-                //g.fillRect(x, y, size, size);
-                g.fillOval(x, y, size, size);
-            }
-        }
-        return images;
-    }
-
     public double update(int tests, int mutationAmount, int maxMutationSize) {
         // generate random mutations of current
-        BufferedImage[] images = randomImages(mutationAmount, tests, maxMutationSize);
+        BufferedImage[] images = Mutator.randomImages(image, mutationAmount, tests, maxMutationSize);
         // find distance
         double[] distances = new double[tests];
         int i;
@@ -56,8 +28,7 @@ public class Art {
             }
         }
 
-        // TODO: this condition allows for mutations that don't cause change, should this be the case?
-        if (distances[best] > imageDistance(image)) { // if best if worst than current, redo
+        if (distances[best] >= imageDistance(image)) { // if best if worst than current, redo
             return update(tests, mutationAmount, maxMutationSize);
         }
 
