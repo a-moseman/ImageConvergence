@@ -11,26 +11,35 @@ public class Mutator {
         return new Color(RANDOM.nextInt(256), RANDOM.nextInt(256), RANDOM.nextInt(256));
     }
 
-    public static BufferedImage[] randomImages(BufferedImage image, int mutationAmount, int tests, int maxMutationSize) {
-        BufferedImage[] images = new BufferedImage[tests];
-        int i, m, x, y, size;
+    public static Mutation randomImage(BufferedImage original, BufferedImage image, double distance, int mutationAmount, int maxMutationSize) {
+        int m, x, y, size;
 
         ColorModel cm = image.getColorModel();
         boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
         WritableRaster raster = image.copyData(null);
 
-        for (i = 0; i < tests; i++) {
-            images[i] = new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-            Graphics g = images[i].getGraphics();
-            for (m = 0; m < mutationAmount; m++) {
-                size = RANDOM.nextInt(maxMutationSize) + 1;
-                x = RANDOM.nextInt(image.getWidth()) - size / 2;
-                y = RANDOM.nextInt(image.getHeight()) - size / 2;
-                g.setColor(randomColor());
-                //g.fillRect(x, y, size, size);
-                g.fillOval(x, y, size, size);
+        BufferedImage out = new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+        Graphics g = out.getGraphics();
+        double newDistance = distance;
+        for (m = 0; m < mutationAmount; m++) {
+            size = RANDOM.nextInt(maxMutationSize) + 1;
+            x = RANDOM.nextInt(image.getWidth()) - (size >> 1);
+            y = RANDOM.nextInt(image.getHeight()) - (size >> 1);
+            g.setColor(randomColor());
+            //g.fillRect(x, y, size, size);
+            g.fillOval(x, y, size, size);
+            for (int dx = -size; dx <= size; dx++) {
+                for (int dy = -size; dy <= size; dy++) {
+                    int x0 = x + dx;
+                    int y0 = y + dy;
+                    if (x0 < 0 || y0 < 0 || x0 >= original.getWidth() || y0 >= original.getHeight()) {
+                        continue;
+                    }
+                    newDistance -= Distance.colorDistance(new Color(original.getRGB(x0, y0)), new Color(image.getRGB(x0, y0))) / (original.getWidth() * original.getHeight());
+                    newDistance += Distance.colorDistance(new Color(original.getRGB(x0, y0)), new Color(out.getRGB(x0, y0))) / (original.getWidth() * original.getHeight());
+                }
             }
         }
-        return images;
+        return new Mutation(out, newDistance);
     }
 }

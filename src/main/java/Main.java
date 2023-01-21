@@ -45,7 +45,7 @@ public class Main {
         int maxMutationSize = 1000;
         frame.setVisible(true);
         while (maxMutationSize > 2) {
-            maxMutationSize = (int) art.update(1, 1, maxMutationSize);
+            maxMutationSize = (int) art.update(1, maxMutationSize);
             frame.repaint();
         }
     }
