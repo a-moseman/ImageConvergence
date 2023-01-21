@@ -28,8 +28,11 @@ public class Mutator {
             g.setColor(randomColor());
             //g.fillRect(x, y, size, size);
             g.fillOval(x, y, size, size);
-            for (int dx = -size; dx <= size; dx++) {
-                for (int dy = -size; dy <= size; dy++) {
+            int s = size;
+            //s = size / 2 makes it really fast but seeminly inaccurate
+
+            for (int dx = -s; dx <= s; dx++) {
+                for (int dy = -s; dy <= s; dy++) {
                     int x0 = x + dx;
                     int y0 = y + dy;
                     if (x0 < 0 || y0 < 0 || x0 >= original.getWidth() || y0 >= original.getHeight()) {
